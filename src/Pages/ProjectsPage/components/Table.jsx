@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import BasicModal from './Modal';
+import BasicModal from '../../../components/Modal';
 import { Card, CardHeader, CardContent, CardActions} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Buttons from './Buttons';
@@ -42,6 +42,7 @@ export default function BasicTable(props) {
           name:item.name,
           workingTimeSeconds: item.workingTimeSeconds,
           totalEntries: item.totalEntries,
+          isStopped: item.isStopped,
         };
       }));
     });
@@ -114,11 +115,12 @@ export default function BasicTable(props) {
             <TableRow
               key={row.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              style={{backgroundColor:(row.isStopped ? 'white': '#def8ff')}}
             >
-              <TableCell align="left" style={{maxWidth:0}}>{row.name}</TableCell>
-              <TableCell align="left" style={{maxWidth:0}}>{row.totalEntries}</TableCell>
-              <TableCell align="left" style={{maxWidth:0}}>{row.workingTimeSeconds}</TableCell>
-              <TableCell align="left" ><Buttons id={row.id} handleEdit={handleEdit} editDefaultValue={row.name} handleDelete={handleDelete} /></TableCell>
+              <TableCell align="left" style={{width:'25%'}}>{row.name}</TableCell>
+              <TableCell align="left" style={{width:'25%'}}>{row.totalEntries}</TableCell>
+              <TableCell align="left" style={{width:'25%'}}>{row.workingTimeSeconds + (row.isStopped ? '' : ' Still Working')}</TableCell>
+              <TableCell align="left" style={{width:'25%', minWidth:300}}><Buttons id={row.id} handleEdit={handleEdit} editDefaultValue={row.name} handleDelete={handleDelete} /></TableCell>
             </TableRow>
           ))}
         </TableBody>

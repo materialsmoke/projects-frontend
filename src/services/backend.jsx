@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// export const apiURL = "https://projectsapi.nordicstandard.net/api";
-export const apiURL = "https://coding-challenge-fullstack-main.test/api";
+export const apiURL = "https://projectsapi.nordicstandard.net/api";
+// export const apiURL = "https://coding-challenge-fullstack-main.test/api";
 export const redirectAfterLogin = "/";
 
 const initAxios = () => {

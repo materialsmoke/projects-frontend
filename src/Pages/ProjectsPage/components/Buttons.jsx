@@ -1,6 +1,6 @@
 import { Button, Stack, Card, CardHeader, CardContent, TextField, CardActions } from '@mui/material';
 import React, {useState} from 'react'
-import BasicModal from './Modal';
+import BasicModal from '../../../components/Modal';
 import { Link } from 'react-router-dom';
 
 const Buttons = (props) => {

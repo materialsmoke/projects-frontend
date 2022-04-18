@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Paper from '@mui/material/Paper';
 import Navbar from '../../components/Navbar';
 import { get, post, patch } from '../../services/backend';
+import LiveTimer from '../../components/LiveTimer';
 
 // function createData(startDate,	endDate,	timeSpent) {
 //   return {startDate,	endDate,	timeSpent };
@@ -12,7 +13,7 @@ import { get, post, patch } from '../../services/backend';
 const ProjectDetails = (props) => {
 
   let params = useParams();
-  console.log('params of this page',params);
+  // console.log('params of this page',params);
 
   const [loading, setLoading] = useState(false);
 
@@ -37,6 +38,12 @@ const ProjectDetails = (props) => {
 
   const [projectName, setProjectName] = useState('');
   const [timeSpent, setTimeSpent] = useState('');
+  const [liveSecondsFromZero, setLiveSecondsFromZero] = useState(0);
+  // const [liveSecondsTotalTime, setLiveSecondsTotalTime] = useState(0);
+
+  const [unfinishedRowStartDate, setUnfinishedRowStartDate] = useState(new Date());
+  const [totalWorkingTimeStartDate, setTotalWorkingTimeStartDate] = useState(new Date());
+  const [totalWorkingTime, setTotalWorkingTime] = useState("00:00:00");
 
   useEffect(()=>{
     get(`/projects/${params.id}`).then(data=>{
@@ -53,6 +60,17 @@ const ProjectDetails = (props) => {
             }
           }
           setStartButton(false);
+
+          let t1 = new Date(item.start);
+          let t2 = new Date();
+          let dif = ( t2.getTime() - t1.getTime() ) / 1000;
+          setLiveSecondsFromZero(Math.round(dif));
+
+          setUnfinishedRowStartDate(item.start);
+
+          setTotalWorkingTimeStartDate(item.start)
+          setTotalWorkingTime(data.totalWorkingTime)
+
           return {
             'startDate': item.start,
             'endDate' : 'Waiting for stop...',
@@ -62,6 +80,13 @@ const ProjectDetails = (props) => {
       )
     });
   }, [startButton, params]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveSecondsFromZero(seconds => seconds + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
@@ -83,7 +108,7 @@ const ProjectDetails = (props) => {
               loading ?(
                 <Button variant="contained" disabled >Stopping...</Button>
               ):(
-                <Button variant="contained" color="error" onClick={()=>{handleStopButton()}}>Stop</Button>
+                <Button variant="contained" color={liveSecondsFromZero % 2 ? "error" : "warning"} onClick={()=>{handleStopButton()}}>Stop ({liveSecondsFromZero})s</Button>
               )
             )}
                   
@@ -93,7 +118,7 @@ const ProjectDetails = (props) => {
               <TableRow>
                 <TableCell align="left">Start Date</TableCell>
                 <TableCell align="left">End Date</TableCell>
-                <TableCell align="left">Time Spent({timeSpent})</TableCell>
+                <TableCell align="left">Time Spent({startButton ? timeSpent : <LiveTimer startDate={totalWorkingTimeStartDate} totalWorkingTime={totalWorkingTime} />})</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -102,10 +127,15 @@ const ProjectDetails = (props) => {
                   key={index}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
-                  <TableCell align="left">{row.startDate}</TableCell>
-                  <TableCell align="left">{row.endDate}</TableCell>
-                  <TableCell align="left">{row.timeSpent}</TableCell>
+                  <TableCell align="left" style={{width: '33%'}}>{row.startDate}</TableCell>
+                  <TableCell align="left" style={{width: '33%'}}>{row.endDate}</TableCell>
+                  <TableCell align="left" style={{width: '33%'}}>
+                    {row.timeSpent === '-' ? (
+                      <span><LiveTimer startDate={unfinishedRowStartDate} /> <span>{'Continuing' + calculateNumberOfDots(liveSecondsFromZero)}</span></span>
+                    ) : (
+                      row.timeSpent
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -115,6 +145,15 @@ const ProjectDetails = (props) => {
       
     </div>
   )
+}
+
+const calculateNumberOfDots = (seconds)=>{
+  let dots = '';
+  for(let i = 0 ; i < seconds % 4; i++){
+    dots += '.';
+  }
+
+  return dots;
 }
 
 export default ProjectDetails
