@@ -45,6 +45,8 @@ const ProjectDetails = (props) => {
   const [totalWorkingTimeStartDate, setTotalWorkingTimeStartDate] = useState(new Date());
   const [totalWorkingTime, setTotalWorkingTime] = useState("00:00:00");
 
+  const [customTimerComponent, setCustomTimerComponent] = useState(null);
+
   useEffect(()=>{
     get(`/projects/${params.id}`).then(data=>{
       data = data.data;
@@ -69,6 +71,9 @@ const ProjectDetails = (props) => {
           setUnfinishedRowStartDate(item.start);
 
           setTotalWorkingTimeStartDate(item.start)
+      
+          setCustomTimerComponent(<LiveTimer startDate={item.start} totalWorkingTime={data.totalWorkingTime} />)
+
           setTotalWorkingTime(data.totalWorkingTime)
 
           return {
@@ -118,7 +123,7 @@ const ProjectDetails = (props) => {
               <TableRow>
                 <TableCell align="left">Start Date</TableCell>
                 <TableCell align="left">End Date</TableCell>
-                <TableCell align="left">Time Spent({startButton ? timeSpent : <LiveTimer startDate={totalWorkingTimeStartDate} totalWorkingTime={totalWorkingTime} />})</TableCell>
+                <TableCell align="left">Time Spent({startButton ? timeSpent : customTimerComponent})</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
