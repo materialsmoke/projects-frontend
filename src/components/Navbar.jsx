@@ -23,7 +23,7 @@ export default function MenuAppBar() {
   };
 
   const handleLogout =()=>{
-    localStorage.removeItem('userToken')
+    document.cookie = "userToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     get('/user').then((data)=>{
       console.log(data);
     })

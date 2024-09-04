@@ -7,11 +7,17 @@ export const redirectAfterLogin = "/";
 const initAxios = () => {
   // console.log('initaxios', localStorage.getItem("userToken"));
   
-  let ax = axios.create({
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  };
+
+  const ax = axios.create({
     baseURL: apiURL,
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem('userToken')
+      Authorization: `Bearer ${getCookie('userToken')}`
     },
     timeout: 4000,
   });
@@ -25,7 +31,7 @@ const initAxios = () => {
 
       if(err.response.status === 401){//"Unauthenticated"
         window.location.href = '/login';
-        localStorage.clear();
+        document.cookie = "userToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       }
 
       console.log('error from interceptors', err.response);

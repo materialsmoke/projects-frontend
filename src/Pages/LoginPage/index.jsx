@@ -35,7 +35,7 @@ export default function LoginPage() {
     }).then(data=>{
       const token = data?.data?.access_token
       if(token !== null){
-        localStorage.setItem('userToken', token);
+        document.cookie = `userToken=${token}; path=/; max-age=${7 * 24 * 60 * 60}`;
         // localStorage.removeItem('userToken');
         
         navigate("/", { replace: true });
